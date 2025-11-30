@@ -385,40 +385,45 @@ INSERT INTO planned_activity (planned_hours, course_instance_id, teaching_activi
 
 
 
--- --------------------------------------------------
--- ALLOCATION (safe inserts)
--- --------------------------------------------------
--- Allokera varje planned_activity till en employee från samma department som kursen
--- Om du vill kan du sprida hours över flera employees, här första anställde per department
-
 INSERT INTO allocation (allocated_hours, planned_activity_id, employee_id)
 SELECT
     pa.planned_hours,
     pa.planned_activity_id,
-    e.employee_id
+    (
+        SELECT e2.employee_id
+        FROM employee e2
+        WHERE e2.department_id = 
+            CASE 
+                WHEN cl.course_code LIKE 'IV%' THEN (SELECT department_id FROM department WHERE department_name='EECS')
+                WHEN cl.course_code LIKE 'IX%' THEN (SELECT department_id FROM department WHERE department_name='MATH')
+                WHEN cl.course_code LIKE 'CS%' THEN (SELECT department_id FROM department WHERE department_name='INF')
+                WHEN cl.course_code LIKE 'EN%' THEN (SELECT department_id FROM department WHERE department_name='EECS')
+                WHEN cl.course_code LIKE 'EE%' THEN (SELECT department_id FROM department WHERE department_name='EECS')
+                WHEN cl.course_code LIKE 'AI%' THEN (SELECT department_id FROM department WHERE department_name='INF')
+                WHEN cl.course_code LIKE 'DB%' THEN (SELECT department_id FROM department WHERE department_name='INF')
+                WHEN cl.course_code LIKE 'SW%' THEN (SELECT department_id FROM department WHERE department_name='INF')
+                WHEN cl.course_code LIKE 'DP%' THEN (SELECT department_id FROM department WHERE department_name='INF')
+                WHEN cl.course_code LIKE 'MA%' THEN (SELECT department_id FROM department WHERE department_name='MATH')
+            END
+        ORDER BY e2.employee_id
+        OFFSET (pa.planned_activity_id % 
+                (SELECT COUNT(*) FROM employee e3 WHERE e3.department_id =
+                    CASE 
+                        WHEN cl.course_code LIKE 'IV%' THEN (SELECT department_id FROM department WHERE department_name='EECS')
+                        WHEN cl.course_code LIKE 'IX%' THEN (SELECT department_id FROM department WHERE department_name='MATH')
+                        WHEN cl.course_code LIKE 'CS%' THEN (SELECT department_id FROM department WHERE department_name='INF')
+                        WHEN cl.course_code LIKE 'EN%' THEN (SELECT department_id FROM department WHERE department_name='EECS')
+                        WHEN cl.course_code LIKE 'EE%' THEN (SELECT department_id FROM department WHERE department_name='EECS')
+                        WHEN cl.course_code LIKE 'AI%' THEN (SELECT department_id FROM department WHERE department_name='INF')
+                        WHEN cl.course_code LIKE 'DB%' THEN (SELECT department_id FROM department WHERE department_name='INF')
+                        WHEN cl.course_code LIKE 'SW%' THEN (SELECT department_id FROM department WHERE department_name='INF')
+                        WHEN cl.course_code LIKE 'DP%' THEN (SELECT department_id FROM department WHERE department_name='INF')
+                        WHEN cl.course_code LIKE 'MA%' THEN (SELECT department_id FROM department WHERE department_name='MATH')
+                    END
+                )) ROWS
+        LIMIT 1
+    )
 FROM planned_activity pa
 JOIN course_instance ci ON pa.course_instance_id = ci.course_instance_id
 JOIN course_layout cl ON ci.course_layout_id = cl.course_layout_id
-JOIN employee e ON e.department_id = 
-    CASE 
-        WHEN cl.course_code LIKE 'IV%' THEN (SELECT department_id FROM department WHERE department_name='EECS')
-        WHEN cl.course_code LIKE 'IX%' THEN (SELECT department_id FROM department WHERE department_name='MATH')
-        WHEN cl.course_code LIKE 'CS%' THEN (SELECT department_id FROM department WHERE department_name='INF')
-        WHEN cl.course_code LIKE 'EN%' THEN (SELECT department_id FROM department WHERE department_name='EECS')
-        WHEN cl.course_code LIKE 'EE%' THEN (SELECT department_id FROM department WHERE department_name='EECS')
-        WHEN cl.course_code LIKE 'AI%' THEN (SELECT department_id FROM department WHERE department_name='INF')
-        WHEN cl.course_code LIKE 'DB%' THEN (SELECT department_id FROM department WHERE department_name='INF')
-        WHEN cl.course_code LIKE 'SW%' THEN (SELECT department_id FROM department WHERE department_name='INF')
-        WHEN cl.course_code LIKE 'DP%' THEN (SELECT department_id FROM department WHERE department_name='INF')
-        WHEN cl.course_code LIKE 'MA%' THEN (SELECT department_id FROM department WHERE department_name='MATH')
-        ELSE e.department_id -- fallback
-    END
-WHERE pa.planned_hours > 0
--- Ta endast en employee per planned_activity för enkelhet
-AND e.employee_id = (
-    SELECT employee_id 
-    FROM employee e2 
-    WHERE e2.department_id = e.department_id 
-    ORDER BY e2.employee_id
-    LIMIT 1
-);
+WHERE pa.planned_hours > 0;
