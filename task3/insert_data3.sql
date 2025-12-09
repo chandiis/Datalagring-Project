@@ -386,13 +386,11 @@ INSERT INTO planned_activity (planned_hours, course_instance_id, teaching_activi
 INSERT INTO allocation (planned_activity_id, employee_id, allocated_hours)
 SELECT 
     pa.planned_activity_id,
-    e.employee_id,
-    ROUND(pa.planned_hours * (0.8 + random() * 0.4))  -- 80–120% av plan
-FROM planned_activity pa
-JOIN employee e 
-    ON e.employee_id = (
+    (
         SELECT employee_id 
         FROM employee 
-        ORDER BY random() 
+        ORDER BY random()
         LIMIT 1
-    );
+    ) AS employee_id,
+    ROUND(pa.planned_hours * (0.9 + random() * 0.3))  -- 90–120%
+FROM planned_activity pa;
