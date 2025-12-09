@@ -4,10 +4,10 @@ SELECT
     ci.study_period AS period,
 
     -- PLANNED COST
-    SUM(pa.planned_hours * ta.factor * 200) / 1000 AS "planned_cost (KSEK)",
+    SUM(pa.planned_hours * ta.factor * 300) / 1000 AS "planned_cost (KSEK)",
 
     -- ACTUAL COST
-    SUM(a.allocated_hours * (sh.salary_amount / 160)) / 1000 AS "actual_cost (KSEK)"
+    SUM(a.allocated_hours * (sh.salary_amount) / 160) / 1000 AS "actual_cost (KSEK)"
 
 FROM course_instance ci
 JOIN course_layout cl
