@@ -386,18 +386,14 @@ INSERT INTO planned_activity (planned_hours, course_instance_id, teaching_activi
 INSERT INTO allocation (planned_activity_id, employee_id, allocated_hours)
 SELECT 
     pa.planned_activity_id,
-    (
-        SELECT sh.employee_id
-        FROM salary_history sh
-        WHERE sh.version = (
-            SELECT MAX(version)
-            FROM salary_history sh2
-            WHERE sh2.employee_id = sh.employee_id
-        )
-        ORDER BY random()
-        LIMIT 1
-    ) AS employee_id,
+    sh.employee_id,
     ROUND(pa.planned_hours * (0.9 + random() * 0.3))  -- 90–120% of planned hours
-FROM planned_activity pa;
-
+FROM planned_activity pa
+-- Pick only employees that have a salary (latest version if needed)
+JOIN (
+    SELECT employee_id
+    FROM salary_history
+    WHERE version = 1  -- optional: pick latest salary version
+) sh ON true
+ORDER BY random();  -- optional: shuffle so allocations are random
 
