@@ -383,37 +383,16 @@ INSERT INTO planned_activity (planned_hours, course_instance_id, teaching_activi
 (40, (SELECT course_instance_id FROM course_instance ci JOIN course_layout cl ON ci.course_layout_id=cl.course_layout_id WHERE cl.course_code='IV1351' AND ci.study_period='P2' AND ci.study_year=2025 LIMIT 1), (SELECT teaching_activity_id FROM teaching_activity WHERE activity_name='Tutorial')),
 (30, (SELECT course_instance_id FROM course_instance ci JOIN course_layout cl ON ci.course_layout_id=cl.course_layout_id WHERE cl.course_code='IV1351' AND ci.study_period='P2' AND ci.study_year=2025 LIMIT 1), (SELECT teaching_activity_id FROM teaching_activity WHERE activity_name='Other'));
 
-
-
-INSERT INTO Allocation (planned_activity_id, employee_id, allocated_hours)
-VALUES
--- PA1 (110 planned hours) fördelas mellan två lärare
-(1, 1, 70),
-(1, 6, 40),
-
--- PA2 (100 planned hours)
-(2, 4, 100),
-
--- PA3 (80 planned hours)
-(3, 7, 80),
-
--- PA4 (90 planned hours)
-(4, 3, 90),
-
--- PA5 (100 planned hours)
-(5, 8, 100),
-
--- PA6 (85 planned hours)
-(6, 2, 85),
-
--- PA7 (95 planned hours)
-(7, 10, 95),
-
--- PA8 (90 planned hours)
-(8, 5, 90),
-
--- PA9 (95 planned hours)
-(9, 9, 95),
-
--- PA10 (110 planned hours)
-(10, 1, 110);
+INSERT INTO allocation (planned_activity_id, employee_id, allocated_hours)
+SELECT 
+    pa.planned_activity_id,
+    e.employee_id,
+    ROUND(pa.planned_hours * (0.8 + random() * 0.4))  -- 80–120% av plan
+FROM planned_activity pa
+JOIN employee e 
+    ON e.employee_id = (
+        SELECT employee_id 
+        FROM employee 
+        ORDER BY random() 
+        LIMIT 1
+    );
