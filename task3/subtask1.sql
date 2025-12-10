@@ -31,7 +31,7 @@ SELECT
             )
 
         WHERE ci.study_year = EXTRACT(YEAR FROM CURRENT_DATE)
-        AND ci.course_instance_id = 7 --change to any id
+        AND ci.course_instance_id = 4--change to any id
 
         GROUP BY 
             cl.course_code,

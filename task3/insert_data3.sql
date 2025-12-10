@@ -387,7 +387,7 @@ INSERT INTO allocation (planned_activity_id, employee_id, allocated_hours)
 SELECT 
     pa.planned_activity_id,
     sh.employee_id,
-    ROUND(pa.planned_hours * (2 + random() * 0.8))  -- 100–150% of planned hours
+    ROUND(pa.planned_hours * (2))  -- 100–150% of planned hours
 FROM planned_activity pa
 -- Pick only employees that have a salary (latest version if needed)
 JOIN (
@@ -395,5 +395,5 @@ JOIN (
     FROM salary_history
     WHERE version = 1  -- optional: pick latest salary version
 ) sh ON true
-ORDER BY sh.employee_id;  -- optional: shuffle so allocations are random
+ORDER BY sh.employee_id; 
 
