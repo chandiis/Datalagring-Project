@@ -1,10 +1,11 @@
-//this is for the IDE --> (used from the directory where .xml file is) package com.kth;
+package com.kth;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Scanner;
 import java.sql.SQLException;
 
 public class Main 
@@ -12,9 +13,14 @@ public class Main
     public static void main( String[] args )
     {
         // PostgreSQL connection parameters
-        String url = "jdbc:postgresql://localhost:5432/project"; // byt till din databas
-        String user = "postgres"; // ditt användarnamn
-        String password = "Chanda-280905"; // ditt lösenord
+        String url = "jdbc:postgresql://localhost:5432/project"; // database
+        String user = "postgres"; // username
+        String password = " "; // password
+
+        //USER--INPUT
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter course_instance_id: ");
+        int instanceId = scanner.nextInt(); 
 
         String query = """
             SELECT 
@@ -50,7 +56,7 @@ public class Main
                 )
 
             WHERE ci.study_year = EXTRACT(YEAR FROM CURRENT_DATE)
-            AND ci.course_instance_id = 1
+            AND ci.course_instance_id = ?
 
             GROUP BY 
                 cl.course_code,
@@ -67,15 +73,19 @@ public class Main
 
             try(PreparedStatement ps = conn.prepareStatement(query)) {
                 
+                ps.setInt(1, instanceId);
+
                 try(ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        System.out.println(
-                            rs.getString("course_code") + " | " +
-                            rs.getInt("course_instance_id") + " | " +
-                            rs.getString("period") + " | " +
-                            rs.getDouble("planned_cost_KSEK") + " | " +
-                            rs.getDouble("actual_cost_KSEK")
-                        );
+                    if (!rs.next()) {
+                        System.out.println("No data found for course_instance_id = " + instanceId);
+                        conn.rollback();
+                    } else {
+                        System.out.println("\n=== Teaching Cost Result ===");
+                        System.out.println("Course Code:        " + rs.getString("course_code"));
+                        System.out.println("Instance ID:        " + rs.getInt("course_instance_id"));
+                        System.out.println("Period:             " + rs.getString("period"));
+                        System.out.println("Planned Cost:       " + rs.getInt("planned_cost_KSEK") + " KSEK");
+                        System.out.println("Actual Cost:        " + rs.getInt("actual_cost_KSEK") + " KSEK");
                     }
                 }
                 //if everything went well, commit
@@ -96,6 +106,7 @@ public class Main
             }   
             e.printStackTrace();
         } finally {
+            scanner.close();
             if (conn != null) {
                 try {
                     conn.close();
