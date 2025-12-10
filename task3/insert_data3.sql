@@ -395,5 +395,5 @@ JOIN (
     FROM salary_history
     WHERE version = 1  -- optional: pick latest salary version
 ) sh ON true
-ORDER BY random();  -- optional: shuffle so allocations are random
+ORDER BY sh.employee_id;  -- optional: shuffle so allocations are random
 
