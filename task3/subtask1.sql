@@ -32,7 +32,7 @@ LEFT JOIN salary_history sh
 
 WHERE ci.study_year = EXTRACT(YEAR FROM CURRENT_DATE)
 -- Eller byt till vald kursinstans:
--- AND ci.course_instance_id = 123
+AND ci.course_instance_id = 1
 
 GROUP BY 
     cl.course_code,
