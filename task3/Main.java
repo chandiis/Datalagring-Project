@@ -1,4 +1,4 @@
-package com.kth;
+//this is for the IDE --> (used from the directory where .xml file is) package com.kth;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
