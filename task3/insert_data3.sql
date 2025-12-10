@@ -387,7 +387,7 @@ INSERT INTO allocation (planned_activity_id, employee_id, allocated_hours)
 SELECT 
     pa.planned_activity_id,
     sh.employee_id,
-    ROUND(pa.planned_hours * (2))  -- 100–150% of planned hours
+    ROUND(pa.planned_hours * (2.4))  -- 100–150% of planned hours
 FROM planned_activity pa
 -- Pick only employees that have a salary (latest version if needed)
 JOIN (
