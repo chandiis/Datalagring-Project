@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Scanner;
+import java.sql.*;
 import java.sql.SQLException;
 
 public class Main 
@@ -13,15 +14,22 @@ public class Main
     public static void main( String[] args )
     {
         // PostgreSQL connection parameters
-        String url = "jdbc:postgresql://localhost:5432/project"; // database
-        String user = "postgres"; // username
-        String password = " "; // password
+        String url = "jdbc:postgresql://localhost:5432/project"; 
+        String user = "postgres"; 
+        String password = " "; 
 
         //USER--INPUT
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter course_instance_id: ");
         int instanceId = scanner.nextInt(); 
 
+         // ------------- QUERY 1: UPDATE ----------------
+        String updateStudents = """
+            UPDATE course_instance
+            SET num_students = num_students + 100
+            WHERE course_instance_id = ?;
+        """;
+        
         String query = """
             SELECT 
                 cl.course_code,
@@ -29,7 +37,7 @@ public class Main
                 ci.study_period AS period,
 
                 -- PLANNED COST
-                ROUND(SUM(pa.planned_hours * ta.factor * 300) / 1000) AS "planned_cost_KSEK",
+                ROUND(SUM((pa.planned_hours + ci.num_students * 0.05) * ta.factor * 300) / 1000) AS planned_cost_KSEK,
 
                 -- ACTUAL COST
                 ROUND(SUM(a.allocated_hours * (sh.salary_amount) / 160) / 1000) AS "actual_cost_KSEK"
@@ -70,6 +78,12 @@ public class Main
                 conn = DriverManager.getConnection(url, user, password);
                 // 1) Turn off autocommit
                 conn.setAutoCommit(false);
+
+            try(PreparedStatement ups = conn.prepareStatement(updateStudents)) {
+                ups.setInt(1, instanceId);
+                int updated = ups.executeUpdate();
+                System.out.println("Students increased by 100 for instance " + instanceId);
+            }
 
             try(PreparedStatement ps = conn.prepareStatement(query)) {
                 

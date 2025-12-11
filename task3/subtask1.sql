@@ -26,7 +26,7 @@ LEFT JOIN salary_history sh
         WHERE sh2.employee_id = a.employee_id
     )
 WHERE ci.study_year = EXTRACT(YEAR FROM CURRENT_DATE)
-  AND ci.course_instance_id = 4 --change to any id
+  AND ci.course_instance_id = 1 --change to any id
 GROUP BY 
     cl.course_code,
     ci.course_instance_id,
