@@ -256,7 +256,7 @@ INSERT INTO teaching_activity (activity_name, factor) VALUES
 ('Lecture', 3.2),
 ('Lab', 2.1),
 ('Tutorial', 2.2),
-('Seminar', 1.5,
+('Seminar', 1.5),
 ('Examination', 1.0),
 ('Administration', 1.0),
 ('Other', 1.0);
