@@ -253,10 +253,10 @@ INSERT INTO salary_history (salary_amount, version, employee_id) VALUES
 -- TEACHING ACTIVITY
 -- --------------------------------------------------
 INSERT INTO teaching_activity (activity_name, factor) VALUES
-('Lecture', 3.6),
-('Lab', 2.4),
-('Tutorial', 2.4),
-('Seminar', 1.8),
+('Lecture', 3.2),
+('Lab', 2.1),
+('Tutorial', 2.2),
+('Seminar', 1.5,
 ('Examination', 1.0),
 ('Administration', 1.0),
 ('Other', 1.0);
@@ -387,7 +387,7 @@ INSERT INTO allocation (planned_activity_id, employee_id, allocated_hours)
 SELECT 
     pa.planned_activity_id,
     sh.employee_id,
-    ROUND(pa.planned_hours * (2.4))  -- 100–150% of planned hours
+    ROUND(pa.planned_hours * (2.6))  
 FROM planned_activity pa
 -- Pick only employees that have a salary (latest version if needed)
 JOIN (

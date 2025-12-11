@@ -4,10 +4,7 @@ SELECT
     ci.study_period AS period,
 
     -- PLANNED COST 
-    ROUND(SUM(
-        (pa.planned_hours + ci.num_students * 0.05)
-        * ta.factor * 300
-    ) / 1000) AS planned_cost_KSEK,
+    ROUND(SUM((pa.planned_hours + ci.num_students * 0.05) * ta.factor * 300) / 1000) AS planned_cost_KSEK,
 
     -- ACTUAL COST 
     ROUND(SUM(a.allocated_hours * sh.salary_amount / 160) / 1000) AS actual_cost_KSEK
@@ -29,7 +26,7 @@ LEFT JOIN salary_history sh
         WHERE sh2.employee_id = a.employee_id
     )
 WHERE ci.study_year = EXTRACT(YEAR FROM CURRENT_DATE)
-  AND ci.course_instance_id = 1 --change to any id
+  AND ci.course_instance_id = 4 --change to any id
 GROUP BY 
     cl.course_code,
     ci.course_instance_id,
