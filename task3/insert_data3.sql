@@ -309,7 +309,6 @@ INSERT INTO course_instance (num_students, study_period, study_year, course_layo
 (80,'P2',2025,(SELECT course_layout_id FROM course_layout WHERE course_code='CS3000' AND version=1 LIMIT 1)),
 (70,'P1',2025,(SELECT course_layout_id FROM course_layout WHERE course_code='CS4000' AND version=1 LIMIT 1));
 
-
 -- --------------------------------------------------
 -- --------------------------------------------------
 -- PLANNED ACTIVITY (safe inserts)
