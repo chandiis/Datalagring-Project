@@ -235,19 +235,19 @@ UPDATE department SET manager_employee_id =
 -- --------------------------------------------------
 -- SALARY HISTORY (versions) - references employees that now exist
 -- --------------------------------------------------
-INSERT INTO salary_history (salary_amount, version, employee_id) VALUES
-(38000, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900101-0001'))),
-(40000, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900101-0001'))),
-(35000, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900202-0002'))),
-(37000, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900202-0002'))),
-(34000, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900303-0003'))),
-(35500, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900303-0003'))),
-(60000, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900404-0004'))),
-(62000, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900404-0004'))),
-(65000, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900505-0005'))),
-(67500, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900505-0005'))),
-(42000, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900606-0006'))),
-(44000, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900606-0006')));
+INSERT INTO salary_history (salary_amount, salary_year, version, employee_id) VALUES
+(38000, 2024, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900101-0001'))),
+(40000, 2025, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900101-0001'))),
+(35000, 2024, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900202-0002'))),
+(37000, 2025, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900202-0002'))),
+(34000, 2024, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900303-0003'))),
+(35500, 2025, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900303-0003'))),
+(60000, 2024, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900404-0004'))),
+(62000, 2025, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900404-0004'))),
+(65000, 2024, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900505-0005'))),
+(67500, 2025, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900505-0005'))),
+(42000, 2024, 1, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900606-0006'))),
+(44000, 2025, 2, (SELECT employee_id FROM employee WHERE person_id=(SELECT person_id FROM person WHERE personal_number='19900606-0006')));
 
 -- --------------------------------------------------
 -- TEACHING ACTIVITY

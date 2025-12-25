@@ -65,13 +65,14 @@ ALTER TABLE person
 CREATE TABLE salary_history (
  salary_history_id INT GENERATED ALWAYS AS IDENTITY NOT NULL,
  salary_amount NUMERIC(12,2) NOT NULL,
+ salary_year INT NOT NULL,
  version INT NOT NULL,
  employee_id INT NOT NULL
 );
 
 ALTER TABLE salary_history 
     ADD CONSTRAINT PK_salary_history PRIMARY KEY (salary_history_id),
-    ADD CONSTRAINT uq_salary_employee_version UNIQUE (employee_id, version);
+    ADD CONSTRAINT uq_salary_employee_version UNIQUE (employee_id, salary_year, version);
 
 
 CREATE TABLE teaching_activity (
