@@ -170,48 +170,48 @@ ALTER TABLE allocation
 CREATE OR REPLACE FUNCTION enforce_teaching_limit()
 RETURNS TRIGGER AS $$
 DECLARE
-    v_period CHAR(2);
-    v_year INT;
-    v_current_count INT;
-    v_max_courses INT;
+    current_courses INT;
+    max_allowed INT;
+    v_study_period CHAR(2);
+    v_study_year INT;
 BEGIN
-    -- Get study period and year of the course instance being allocated
+    -- Get study period and year for the new allocation
     SELECT ci.study_period, ci.study_year
-    INTO v_period, v_year
+    INTO v_study_period, v_study_year
     FROM planned_activity pa
     JOIN course_instance ci
-        ON ci.course_instance_id = pa.course_instance_id
+        ON pa.course_instance_id = ci.course_instance_id
     WHERE pa.planned_activity_id = NEW.planned_activity_id;
 
-    -- Read the limit from teaching_limit table
-    SELECT max_courses
-    INTO v_max_courses
-    FROM teaching_limit;
-
-    -- Count distinct course instances already allocated
+    -- Count distinct course instances for the employee in that period/year
     SELECT COUNT(DISTINCT ci.course_instance_id)
-    INTO v_current_count
+    INTO current_courses
     FROM allocation a
     JOIN planned_activity pa
-        ON pa.planned_activity_id = a.planned_activity_id
+        ON a.planned_activity_id = pa.planned_activity_id
     JOIN course_instance ci
-        ON ci.course_instance_id = pa.course_instance_id
+        ON pa.course_instance_id = ci.course_instance_id
     WHERE a.employee_id = NEW.employee_id
-      AND ci.study_period = v_period
-      AND ci.study_year = v_year;
+      AND ci.study_period = v_study_period
+      AND ci.study_year = v_study_year;
 
-    -- Enforce rule
-    IF v_current_count + 1 > v_max_courses THEN
+    -- Read limit from table (not hardcoded!)
+    SELECT max_courses
+    INTO max_allowed
+    FROM teaching_limit
+    LIMIT 1;
+
+    IF current_courses >= max_allowed THEN
         RAISE EXCEPTION
-            'Employee % exceeds teaching limit (% courses) in period % %',
-            NEW.employee_id, v_max_courses, v_period, v_year;
+        'Teaching limit exceeded: max % course instances per study period',
+        max_allowed;
     END IF;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_enforce_teaching_limit
+CREATE TRIGGER trg_teaching_limit
 BEFORE INSERT OR UPDATE ON allocation
 FOR EACH ROW
 EXECUTE FUNCTION enforce_teaching_limit();
