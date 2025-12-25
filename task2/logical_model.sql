@@ -165,4 +165,53 @@ ALTER TABLE allocation
 ALTER TABLE allocation 
     ADD CONSTRAINT FK_allocation_1 FOREIGN KEY (employee_id) REFERENCES employee (employee_id);
 
+-- TRIGGER 
 
+CREATE OR REPLACE FUNCTION enforce_teaching_limit()
+RETURNS TRIGGER AS $$
+DECLARE
+    current_courses INT;
+    max_allowed INT;
+    v_study_period CHAR(2);
+    v_study_year INT;
+BEGIN
+    -- Get study period and year for the new allocation
+    SELECT ci.study_period, ci.study_year
+    INTO v_study_period, v_study_year
+    FROM planned_activity pa
+    JOIN course_instance ci
+        ON pa.course_instance_id = ci.course_instance_id
+    WHERE pa.planned_activity_id = NEW.planned_activity_id;
+
+    -- Count distinct course instances for the employee in that period/year
+    SELECT COUNT(DISTINCT ci.course_instance_id)
+    INTO current_courses
+    FROM allocation a
+    JOIN planned_activity pa
+        ON a.planned_activity_id = pa.planned_activity_id
+    JOIN course_instance ci
+        ON pa.course_instance_id = ci.course_instance_id
+    WHERE a.employee_id = NEW.employee_id
+      AND ci.study_period = v_study_period
+      AND ci.study_year = v_study_year;
+
+    -- Read limit from table (not hardcoded!)
+    SELECT max_courses
+    INTO max_allowed
+    FROM teaching_limit
+    LIMIT 1;
+
+    IF current_courses >= max_allowed THEN
+        RAISE EXCEPTION
+        'Teaching limit exceeded: max % course instances per study period',
+        max_allowed;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_teaching_limit
+BEFORE INSERT OR UPDATE ON allocation
+FOR EACH ROW
+EXECUTE FUNCTION enforce_teaching_limit();
